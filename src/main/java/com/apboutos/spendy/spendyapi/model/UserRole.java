@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 
 import static com.apboutos.spendy.spendyapi.model.UserRolePermission.*;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public enum UserRole {
 
     USER(new HashSet<>(Arrays.asList(USER_READ,ENTRY_READ,ENTRY_WRITE,CATEGORY_READ,CATEGORY_WRITE))),

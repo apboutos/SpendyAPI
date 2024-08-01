@@ -10,14 +10,13 @@ import java.sql.Timestamp;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "SPENDY_USER")
+@Data
 @Builder
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @EqualsAndHashCode(of = {"username"})
 @ToString(of = {"username","password","enabled","lastLogin"})
-@Table(name = "SPENDY_USER")
 public class User {
 
     @Id

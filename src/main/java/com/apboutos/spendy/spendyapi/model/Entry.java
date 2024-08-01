@@ -4,20 +4,19 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
+@Table(name = "ENTRY")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-@Table(name = "ENTRY")
+@ToString(of = {"id"})
+@EqualsAndHashCode(of = {"id"})
 public class Entry {
 
     @Id
@@ -48,10 +47,19 @@ public class Entry {
     @NotNull
     private Boolean isDeleted;
 
-    public enum Type{
-        Income,Expense
-    }
-
+    /**
+     * Constructor that allows the creation of an {@link Entry} object without knowing its database ID.
+     *
+     * @param uuid the {@link UUID} of the Entry.
+     * @param username the name of the {@link User}
+     * @param type the {@link Type} of the Entry.
+     * @param category the {@link Category} of the Entry.
+     * @param description the description of the Entry.
+     * @param price the price of the Entry in {@code long} format (cents). Divide by 100 to get the value in €
+     * @param createdAt the creation date (DD/MM/YYYY) of the Entry as a {@link Date} object.
+     * @param lastUpdate the last update timestamp (DD/MM/YYYY hh:mm:ss) of the Entry as a {@link Timestamp} object.
+     * @param isDeleted whether the Entry is marked as deleted.
+     */
     public Entry(UUID uuid,
                  User username,
                  Type type,
