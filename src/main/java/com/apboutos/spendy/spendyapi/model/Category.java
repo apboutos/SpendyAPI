@@ -23,22 +23,28 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORY_SEQ")
     @SequenceGenerator(name = "CATEGORY_SEQ", sequenceName = "CATEGORY_SEQUENCE", allocationSize = 1)
+    @Column(name = "id")
     private long id;
     @NotNull
-    @Column(unique = true)
+    @Column(name = "uuid", unique = true)
     private final UUID uuid;
+    @Column(name = "name")
     private String name;
+    @Column(name = "type")
     private Type type;
+    @Column(name = "createdAt")
     private Date createdAt;
+    @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
     @NotNull
+    @Column(name = "isDeleted")
     private Boolean isDeleted;
 
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "usr_username" ,referencedColumnName = "username")
+    @JoinColumn(name = "user_username", referencedColumnName = "username")
     private final User user;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "category")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private List<Entry> entries;
 
     /**

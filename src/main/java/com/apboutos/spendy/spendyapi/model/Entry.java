@@ -22,29 +22,37 @@ public class Entry {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ENTRY_SEQ")
     @SequenceGenerator(name = "ENTRY_SEQ", sequenceName = "ENTRY_SEQUENCE", allocationSize = 1)
+    @Column(name = "id")
     private long id;
     @NotNull
-    @Column(unique = true)
+    @Column(name = "uuid", unique = true)
     private final UUID uuid;
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(referencedColumnName = "username")
+    @JoinColumn(name = "user_username", referencedColumnName = "username")
     @NotNull
     private final User username;
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Column(name = "type")
     private Type type;
     @ManyToOne(targetEntity = Category.class)
     @NotNull
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
     @Size(max = 45)
     @NotBlank
+    @Column(name = "description")
     private String description;
     @NotNull
+    @Column(name = "price")
     private long price;
     @NotNull
+    @Column(name = "createdAt")
     private final Date createdAt;
+    @Column(name = "lastUpdate")
     private Timestamp lastUpdate;
     @NotNull
+    @Column(name = "isDeleted")
     private Boolean isDeleted;
 
     /**

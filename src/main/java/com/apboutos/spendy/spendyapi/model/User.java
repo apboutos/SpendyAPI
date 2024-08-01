@@ -22,15 +22,22 @@ public class User {
     @Id
     @Email
     @Size(max = 100)
+    @Column(name = "username")
     private String username;
     //@Size(min = 60, max = 60)
+    @Column(name = "password")
     private String password;
+    @Column(name = "registrationDate")
     private Timestamp registrationDate;
+    @Column(name = "lastLogin")
     private Timestamp lastLogin;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "userRole")
     private UserRole userRole;
+    @Column(name = "locked")
     private Boolean locked = false;
+    @Column(name = "enabled")
     private Boolean enabled = false;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")

@@ -19,16 +19,18 @@ public class EmailConfirmationToken {
             allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator = "CONFIRMATION_TOKEN_SEQ")
+    @Column(name = "id")
     private Long id;
-    @Column(nullable = false)
+    @Column(name = "token", nullable = false)
     private String token;
-    @Column(nullable = false)
+    @Column(name = "createdAt", nullable = false)
     private Timestamp createdAt;
-    @Column(nullable = false)
+    @Column(name = "expiresAt", nullable = false)
     private Timestamp expiresAt;
+    @Column(name = "confirmedAt")
     private Timestamp confirmedAt;
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(nullable = false,referencedColumnName = "username")
+    @JoinColumn(name = "user_username", nullable = false,referencedColumnName = "username")
     private User user;
 
     public EmailConfirmationToken(String token, User user, Timestamp createdAt, Timestamp expiresAt) {
