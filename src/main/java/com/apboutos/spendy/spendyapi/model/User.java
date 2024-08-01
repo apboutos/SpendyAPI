@@ -23,7 +23,7 @@ public class User {
     @Email
     @Size(max = 100)
     private String username;
-    @Size(min = 60, max = 60)
+    //@Size(min = 60, max = 60)
     private String password;
     private Timestamp registrationDate;
     private Timestamp lastLogin;
@@ -35,5 +35,15 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Category> categories;
+
+    public User(String username, String password, UserRole userRole) {
+        this.username = username;
+        this.password = password;
+        this.registrationDate = new Timestamp(System.currentTimeMillis());
+        this.lastLogin = new Timestamp(System.currentTimeMillis());
+        this.userRole = userRole;
+        this.locked = false;
+        this.enabled = false;
+    }
 
 }
