@@ -32,12 +32,12 @@ public class Category {
     private String name;
     @Column(name = "type")
     private Type type;
-    @Column(name = "createdAt")
+    @Column(name = "created_at")
     private Date createdAt;
-    @Column(name = "lastUpdate")
+    @Column(name = "last_update")
     private Timestamp lastUpdate;
     @NotNull
-    @Column(name = "isDeleted")
+    @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     @ManyToOne(targetEntity = User.class)

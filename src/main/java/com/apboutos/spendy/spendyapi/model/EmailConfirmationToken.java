@@ -23,11 +23,11 @@ public class EmailConfirmationToken {
     private Long id;
     @Column(name = "token", nullable = false)
     private String token;
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Timestamp createdAt;
-    @Column(name = "expiresAt", nullable = false)
+    @Column(name = "expires_at", nullable = false)
     private Timestamp expiresAt;
-    @Column(name = "confirmedAt")
+    @Column(name = "confirmed_at")
     private Timestamp confirmedAt;
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_username", nullable = false,referencedColumnName = "username")

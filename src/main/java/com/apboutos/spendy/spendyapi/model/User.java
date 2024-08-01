@@ -27,13 +27,13 @@ public class User {
     //@Size(min = 60, max = 60)
     @Column(name = "password")
     private String password;
-    @Column(name = "registrationDate")
+    @Column(name = "registration_date")
     private Timestamp registrationDate;
-    @Column(name = "lastLogin")
+    @Column(name = "last_login")
     private Timestamp lastLogin;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "userRole")
+    @Column(name = "user_role")
     private UserRole userRole;
     @Column(name = "locked")
     private Boolean locked = false;

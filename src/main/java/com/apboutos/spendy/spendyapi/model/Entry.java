@@ -47,12 +47,12 @@ public class Entry {
     @Column(name = "price")
     private long price;
     @NotNull
-    @Column(name = "createdAt")
+    @Column(name = "created_at")
     private final Date createdAt;
-    @Column(name = "lastUpdate")
+    @Column(name = "last_update")
     private Timestamp lastUpdate;
     @NotNull
-    @Column(name = "isDeleted")
+    @Column(name = "is_deleted")
     private Boolean isDeleted;
 
     /**
