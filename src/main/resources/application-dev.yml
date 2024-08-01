@@ -1,0 +1,22 @@
+server:
+  port: 8081
+  address: localhost
+
+spring:
+  application:
+    name: SpendyAPI
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    password: mysecretpassword
+    username: postgres
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    database: postgresql
+    open-in-view: false

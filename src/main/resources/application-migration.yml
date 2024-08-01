@@ -1,0 +1,23 @@
+server:
+  port: 8081
+  address: localhost
+
+spring:
+  application:
+    name: SpendyAPI
+  config:
+    activate:
+      on-profile: migration
+
+  datasource:
+    url: jdbc:postgresql://cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com/d8vu4cgggfgjr3
+    username: ua0ivsrglr3f1t
+    password: pab9c43b397bae68696fee0b800f7935b3a8871f1df2c6af5d0ced43243dc6f66
+  jpa:
+    hibernate:
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    database: postgresql
+    open-in-view: false
