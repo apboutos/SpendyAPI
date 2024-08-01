@@ -10,9 +10,9 @@ spring:
       on-profile: migration
 
   datasource:
-    url: jdbc:postgresql://cah8ha8ra8h8i7.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com/d8vu4cgggfgjr3
-    username: ua0ivsrglr3f1t
-    password: pab9c43b397bae68696fee0b800f7935b3a8871f1df2c6af5d0ced43243dc6f66
+    url: jdbc:postgresql://c724r43q8jp5nk.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com:5432/d9ln853h1raaks
+    username: ue5gebbvenubtf
+    password: p7403a7d132f9c27a80234e8febe4d2624fd57393fbde6c02381ef6b4798f1a2f
   jpa:
     hibernate:
       naming:
