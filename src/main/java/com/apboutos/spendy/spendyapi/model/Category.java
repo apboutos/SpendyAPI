@@ -30,6 +30,8 @@ public class Category {
     private final UUID uuid;
     @Column(name = "name")
     private String name;
+    @Enumerated(EnumType.STRING)
+    @NotNull
     @Column(name = "type")
     private Type type;
     @Column(name = "created_at")
