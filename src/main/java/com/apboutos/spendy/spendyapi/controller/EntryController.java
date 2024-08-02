@@ -72,12 +72,21 @@ public class EntryController {
     }
 
     /**
-     * TODO
+     * Returns the Map with the category UUID as the key and a list of Integers as value. The list of integers contains
+     * four sums, one for the day, one for the month, one year and one for the lifetime for the specified category.
+     * <br>
+     * <br>
+     * Example: If the given UUID corresponds to Food category and the specified date is 24/05/2024
+     * the list of Integers might look like this  [13,158,1256,10243].
+     * <br>The first value is the sum of all entries in Food category for that day (the 24rth of May 2024).
+     * <br>The second value is the sum of all entries in Food category for that month (May 2024).
+     * <br>The third value is the sum of all entries in Food category for that year (2024).
+     * <br>The forth value is the sum of all entries in Food category.
      *
-     * @param categories
-     * @param date
+     * @param categories the UUIDs of the categories.
+     * @param date the date for which the sums will be calculated.
      * @param authentication the user authentication information.
-     * @return
+     * @return a {@link Map} with category {@link UUID} as the key and a {@code List} of {@code Integer} as the value.
      */
     @GetMapping(path = "/aggregates/by-category")
    ResponseEntity<Map<UUID, List<Integer>>> getAggregatesByCategory(
