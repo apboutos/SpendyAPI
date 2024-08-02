@@ -1,17 +1,20 @@
 package com.apboutos.spendy.spendyapi.controller;
 
 import com.apboutos.spendy.spendyapi.exception.*;
+import com.apboutos.spendy.spendyapi.response.security.JwtTokenExpiredResponse;
+import com.apboutos.spendy.spendyapi.response.user.UserAuthenticationResponse;
 import com.apboutos.spendy.spendyapi.response.user.UserConfirmationResponse;
 import com.apboutos.spendy.spendyapi.response.user.UserRegistrationResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 
 
 @ControllerAdvice
@@ -29,27 +32,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-/*    @ExceptionHandler(AuthenticationException.class)
+    @ExceptionHandler(AuthenticationException.class)
     ResponseEntity<Object> handleUserNotFoundException(AuthenticationException exception, WebRequest webRequest) {
         log.error(exception.getMessage());
         return handleExceptionInternal(exception,
-                new UserAuthenticationResponse(HttpStatus.UNAUTHORIZED,false,exception.getMessage(),Timestamp.from(Instant.now()),null),
+                new UserAuthenticationResponse(exception.getMessage(),null),
                 new HttpHeaders(),
                 HttpStatus.UNAUTHORIZED,
                 webRequest
         );
-    }*/
+    }
 
-/*    @ExceptionHandler(ExpiredJwtException.class)
+    @ExceptionHandler(ExpiredJwtException.class)
     ResponseEntity<Object> handleExpiredJwtException(AuthenticationException exception, WebRequest webRequest) {
         log.error(exception.getMessage());
         return handleExceptionInternal(exception,
-                new JwtTokenExpiredResponse(HttpStatus.UNAUTHORIZED,false,exception.getMessage(),Timestamp.from(Instant.now())),
+                new JwtTokenExpiredResponse(exception.getMessage()),
                 new HttpHeaders(),
                 HttpStatus.UNAUTHORIZED,
                 webRequest
         );
-    }*/
+    }
 
     @ExceptionHandler(UserNotSavedException.class)
     ResponseEntity<Object> handleUserNotSavedException(UserNotSavedException exception, WebRequest webRequest) {

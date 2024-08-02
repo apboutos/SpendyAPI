@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @Size(max = 100)
     @Column(name = "username")
     private String username;
-    //@Size(min = 60, max = 60)
+    @Size(min = 60, max = 60)
     @Column(name = "password")
     private String password;
     @Column(name = "registration_date")

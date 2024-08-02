@@ -1,6 +1,6 @@
 package com.apboutos.spendy.spendyapi.configuration;
 
-//import com.apboutos.spendy.spendyapi.security.JWTAuthenticationFilter;
+import com.apboutos.spendy.spendyapi.security.JWTAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +24,7 @@ public class WebSecurityConfigProd {
 
     private final AuthenticationProvider authenticationProvider;
 
-    //private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
 
     private static final String ENTRIES = "/api/v1/entries";
@@ -55,7 +55,7 @@ public class WebSecurityConfigProd {
         });
         http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
