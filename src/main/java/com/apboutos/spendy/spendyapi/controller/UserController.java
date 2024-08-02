@@ -30,7 +30,7 @@ public class UserController {
 
 
     @PostMapping("/register")
-    ResponseEntity<UserRegistrationResponse> postUser(@RequestBody UserRegistrationRequest request) throws UsernameTakenException, UserNotSavedException {
+    ResponseEntity<UserRegistrationResponse> postUser(@RequestBody UserRegistrationRequest request) throws UsernameTakenException {
         log.info("Called postUser method with request: {}", request);
 
         final EmailConfirmationToken token = userService.registerUser(request);
@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/authenticate")
-    ResponseEntity<UserAuthenticationResponse> authenticateUser(@RequestBody UserAuthenticationRequest request) throws UsernameNotFoundException {
+    ResponseEntity<UserAuthenticationResponse> authenticateUser(@RequestBody UserAuthenticationRequest request) {
         log.info("Called authenticateUser with request {}", request);
 
         final String jwToken = authenticationService.authenticateUser(request);

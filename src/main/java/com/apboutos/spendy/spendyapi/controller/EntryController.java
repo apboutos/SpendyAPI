@@ -2,7 +2,6 @@ package com.apboutos.spendy.spendyapi.controller;
 
 import com.apboutos.spendy.spendyapi.dto.EntryDTO;
 import com.apboutos.spendy.spendyapi.exception.CategoryNotFoundException;
-import com.apboutos.spendy.spendyapi.exception.UsernameNotFoundException;
 import com.apboutos.spendy.spendyapi.response.entry.CreateEntriesResponse;
 import com.apboutos.spendy.spendyapi.response.entry.DeleteEntriesResponse;
 import com.apboutos.spendy.spendyapi.response.entry.UpdateEntriesResponse;
@@ -16,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -40,14 +40,15 @@ public class EntryController {
     /**
      * Endpoint for the retrieval of entries that returns all the entries that were updated after the specified timestamp.
      * @param lastPullRequestTimestamp a string containing an {@code ISO-8601} timestamp of the last time the client performed a pull request.
+     * @param authentication the user authentication information.
      * @return a list of {@link EntryDTO} objects containing all the retrieved entries.
      */
     @GetMapping
-    ResponseEntity<List<EntryDTO>> getEntries(@RequestParam("lastPullRequestTimestamp") @NotBlank String lastPullRequestTimestamp) throws UsernameNotFoundException {
+    ResponseEntity<List<EntryDTO>> getEntries(@RequestParam("lastPullRequestTimestamp") @NotBlank String lastPullRequestTimestamp, Authentication authentication) {
         log.info("Called getEntries with {}", lastPullRequestTimestamp);
 
         final LocalDateTime localDateTime = LocalDateTime.parse(lastPullRequestTimestamp, DateTimeFormatter.ISO_DATE_TIME);
-        final List<EntryDTO> entries = entryService.getEntries(Timestamp.valueOf(localDateTime),"apboutos@gmail.com");
+        final List<EntryDTO> entries = entryService.getEntries(Timestamp.valueOf(localDateTime),authentication.getName());
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }
@@ -55,29 +56,39 @@ public class EntryController {
     /**
      * Endpoint for the retrieval of entries that returns all the entries that were created at the specified date.
      * @param date a string containing an {@code ISO-8601} date to be matches the creation date of the entries.
+     * @param authentication the user authentication information.
      * @return a list of {@link EntryDTO} objects containing all the retrieved entries.
      */
     @GetMapping(path = "/date")
-    ResponseEntity<List<EntryDTO>> getEntriesByDate(@RequestParam("date") @NotBlank String date) throws UsernameNotFoundException {
+    ResponseEntity<List<EntryDTO>> getEntriesByDate(@RequestParam("date") @NotBlank String date, Authentication authentication) {
         log.info("Called getEntriesByDate with date {}", date);
 
         final LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME);
         final Date parsedDate = Date.valueOf(localDate);
 
-        final List<EntryDTO> entries = entryService.getEntriesByDate(parsedDate,"apboutos@gmail.com");
+        final List<EntryDTO> entries = entryService.getEntriesByDate(parsedDate,authentication.getName());
 
         return new ResponseEntity<>(entries,HttpStatus.OK);
     }
 
+    /**
+     * TODO
+     *
+     * @param categories
+     * @param date
+     * @param authentication the user authentication information.
+     * @return
+     */
     @GetMapping(path = "/aggregates/by-category")
    ResponseEntity<Map<UUID, List<Integer>>> getAggregatesByCategory(
             @RequestParam("categories") @NotNull List<UUID> categories,
-            @RequestParam("date") @NotNull String date) throws UsernameNotFoundException {
+            @RequestParam("date") @NotNull String date,
+            Authentication authentication) {
         log.info("Called getAggregatesByCategory with categories: {} date: {}",categories,date);
 
         final LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME);
 
-        final Map<UUID, List<Integer>> result = this.entryService.getPriceSumByDate("apboutos@gmail.com",categories,localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+        final Map<UUID, List<Integer>> result = this.entryService.getPriceSumByDate(authentication.getName(),categories,localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
 
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
@@ -85,13 +96,14 @@ public class EntryController {
     /**
      * Endpoint for creating the specified entries.
      * @param entries a list of {@link EntryDTO} objects containing all the data of the entries to be created.
+     * @param authentication the user authentication information.
      * @return a {@link CreateEntriesResponse} containing the created entries as well as entries that failed to be created due to a conflict.
      */
     @PostMapping
-    ResponseEntity<CreateEntriesResponse> createEntries(@Valid @RequestBody List<EntryDTO> entries) throws UsernameNotFoundException {
+    ResponseEntity<CreateEntriesResponse> createEntries(@Valid @RequestBody List<EntryDTO> entries, Authentication authentication) {
         log.info("Called createEntries with {}", entries);
 
-        final CreateEntriesResponse response = entryService.saveEntries(entries,"apboutos@gmail.com");
+        final CreateEntriesResponse response = entryService.saveEntries(entries,authentication.getName());
         if (response.getConflictingEntriesOnId().isEmpty() && response.getConflictingEntriesOnCategory().isEmpty()) {
             return new ResponseEntity<>(response,HttpStatus.CREATED);
         }
@@ -121,16 +133,18 @@ public class EntryController {
      * Endpoint for updating the category of all entries.
      * @param oldCategoryUUID the {@link UUID} of the category to be replaced.
      * @param newCategoryUUID the {@link UUID} of the replacement category.
+     * @param authentication the user authentication information.
      * @return a {@link UpdateEntriesResponse} containing the entries that were updated.
      * @throws CategoryNotFoundException if either the category to be replaced or the replacement category were not found.
      */
     @PutMapping(path = "/replaceCategory")
     ResponseEntity<UpdateEntriesResponse> replaceCategory(
             @RequestParam @NotBlank String oldCategoryUUID,
-            @RequestParam @NotBlank String newCategoryUUID) throws CategoryNotFoundException, UsernameNotFoundException {
+            @RequestParam @NotBlank String newCategoryUUID,
+            Authentication authentication) throws CategoryNotFoundException {
         log.info("Called replaceCategory with oldCategoryUUID {} and newCategoryUUID {}", oldCategoryUUID, newCategoryUUID);
 
-        final List<EntryDTO> updatedEntries = entryService.replaceCategory(oldCategoryUUID, newCategoryUUID, "apboutos@gmail.com");
+        final List<EntryDTO> updatedEntries = entryService.replaceCategory(oldCategoryUUID, newCategoryUUID, authentication.getName());
 
         return new ResponseEntity<>(new UpdateEntriesResponse(
                 updatedEntries,

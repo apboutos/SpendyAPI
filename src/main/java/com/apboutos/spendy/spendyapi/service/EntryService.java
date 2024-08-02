@@ -2,7 +2,6 @@ package com.apboutos.spendy.spendyapi.service;
 
 import com.apboutos.spendy.spendyapi.dto.EntryDTO;
 import com.apboutos.spendy.spendyapi.exception.CategoryNotFoundException;
-import com.apboutos.spendy.spendyapi.exception.UsernameNotFoundException;
 import com.apboutos.spendy.spendyapi.repository.CategoryRepository;
 import com.apboutos.spendy.spendyapi.repository.EntryRepository;
 import com.apboutos.spendy.spendyapi.response.entry.CreateEntriesResponse;
@@ -34,9 +33,9 @@ public class EntryService {
     private final CategoryRepository categoryRepository;
 
 
-    public CreateEntriesResponse saveEntries(List<EntryDTO> entries, String username) throws IllegalArgumentException, UsernameNotFoundException {
+    public CreateEntriesResponse saveEntries(List<EntryDTO> entries, String username) throws IllegalArgumentException {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
         final List<EntryDTO> savedEntries = new ArrayList<>();
         final List<EntryDTO> conflictingEntriesOnId = new ArrayList<>();
         final List<EntryDTO> conflictingEntriesOnCategory = new ArrayList<>();
@@ -64,18 +63,18 @@ public class EntryService {
                 conflictingEntriesOnCategory);
     }
 
-    public List<EntryDTO> getEntries(Timestamp lastPullRequestTimestamp, String username) throws UsernameNotFoundException {
+    public List<EntryDTO> getEntries(Timestamp lastPullRequestTimestamp, String username) {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
 
         final List<Entry> entriesReturnedBySearch = entryRepository.findEntriesByUsernameAndLastUpdateAfter(user, lastPullRequestTimestamp);
 
         return entriesReturnedBySearch.stream().map(this::createDTOFromEntry).collect(Collectors.toList());
     }
 
-    public List<EntryDTO> getEntriesByDate(Date date, String username) throws UsernameNotFoundException {
+    public List<EntryDTO> getEntriesByDate(Date date, String username) {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
 
         final List<Entry> entriesReturnedBySearch = entryRepository.findEntryByUsernameAndCreatedAt(user, date);
 
@@ -83,9 +82,9 @@ public class EntryService {
 
     }
 
-    public Map<UUID, List<Integer>> getPriceSumByDate(String username, List<UUID> categories, int dayOfMonth, int month, int year) throws UsernameNotFoundException {
+    public Map<UUID, List<Integer>> getPriceSumByDate(String username, List<UUID> categories, int dayOfMonth, int month, int year) {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
         final Map<UUID, List<Integer>> sumsPerCategory = new HashMap<>();
 
         for (UUID categoryUUID : categories) {
@@ -104,8 +103,8 @@ public class EntryService {
         return sumsPerCategory;
     }
 
-    public int countEntriesByCategory(Category category, String username) throws UsernameNotFoundException {
-        final User user = (User) userService.loadUserByUsername(username);
+    public int countEntriesByCategory(Category category, String username) {
+        final User user = userService.loadUserByUsername(username);
         return entryRepository.countEntriesByUsernameAndCategory(user, category);
     }
 
@@ -141,9 +140,9 @@ public class EntryService {
     }
 
     @Transactional
-    public List<EntryDTO> replaceCategory(String oldCategoryUUID, String newCategoryUUID, String username) throws CategoryNotFoundException, UsernameNotFoundException {
+    public List<EntryDTO> replaceCategory(String oldCategoryUUID, String newCategoryUUID, String username) throws CategoryNotFoundException {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
         final Optional<Category> oldCategory = this.categoryRepository.findCategoryByUuid(UUID.fromString(oldCategoryUUID));
         final Optional<Category> newCategory = this.categoryRepository.findCategoryByUuid(UUID.fromString(newCategoryUUID));
         final List<EntryDTO> updatedEntries = new ArrayList<>();

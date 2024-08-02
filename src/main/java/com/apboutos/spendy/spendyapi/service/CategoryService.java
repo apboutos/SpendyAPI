@@ -4,7 +4,6 @@ import com.apboutos.spendy.spendyapi.dto.CategoryDTO;
 import com.apboutos.spendy.spendyapi.exception.CategoryExistsException;
 import com.apboutos.spendy.spendyapi.exception.CategoryHasEntriesException;
 import com.apboutos.spendy.spendyapi.exception.CategoryNotFoundException;
-import com.apboutos.spendy.spendyapi.exception.UsernameNotFoundException;
 import com.apboutos.spendy.spendyapi.model.Category;
 import com.apboutos.spendy.spendyapi.model.User;
 import com.apboutos.spendy.spendyapi.repository.CategoryRepository;
@@ -28,9 +27,9 @@ public class CategoryService {
 
     private final UserService userService;
 
-    public List<CategoryDTO> getAllCategoriesOfUser(String username ) throws UsernameNotFoundException {
+    public List<CategoryDTO> getAllCategoriesOfUser(String username ) {
 
-        final List<Category> categories = repository.findCategoriesByUser((User)userService.loadUserByUsername(username));
+        final List<Category> categories = repository.findCategoriesByUser(userService.loadUserByUsername(username));
 
         return categories.stream()
                 .map((category -> new CategoryDTO(
@@ -44,9 +43,9 @@ public class CategoryService {
 
     }
 
-    public CategoryDTO createCategory(CategoryDTO categoryDTO, String username) throws CategoryExistsException, UsernameNotFoundException {
+    public CategoryDTO createCategory(CategoryDTO categoryDTO, String username) throws CategoryExistsException {
 
-        final User user = (User) userService.loadUserByUsername(username);
+        final User user = userService.loadUserByUsername(username);
         final Category category = new Category(
                 categoryDTO.uuid(),
                 categoryDTO.name(),
@@ -112,7 +111,7 @@ public class CategoryService {
                 categoryDTO.isDeleted());
     }
 
-    public void deleteCategory(String categoryUUID, String username) throws CategoryHasEntriesException, UsernameNotFoundException {
+    public void deleteCategory(String categoryUUID, String username) throws CategoryHasEntriesException {
 
         final Optional<Category> searchResult = repository.findCategoryByUuid(UUID.fromString(categoryUUID));
         if (searchResult.isPresent()) {
