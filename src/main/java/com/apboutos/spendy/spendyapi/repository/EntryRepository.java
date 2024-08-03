@@ -27,13 +27,13 @@ public interface EntryRepository extends JpaRepository<Entry, String> {
 
     List<Entry> findEntriesByUsernameAndCategory(User user, Category category);
 
-    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND FUNCTION('DAYOFMONTH', e.createdAt) = :dayOfMonth")
+    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND EXTRACT(DAY FROM e.createdAt) = :dayOfMonth")
     Integer getSumOfPricesByUsernameAndCategoryAndDayOfMonth(@Param(value = "user") User user, @Param("categoryUUID") UUID categoryUUID, @Param("dayOfMonth") int dayOfMonth);
 
-    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND FUNCTION('MONTH', e.createdAt) = :month")
+    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND EXTRACT(MONTH FROM e.createdAt) = :month")
     Integer getSumOfPricesByUsernameAndCategoryAndMonth(@Param(value = "user") User user, @Param("categoryUUID") UUID categoryUUID, @Param("month") int month);
 
-    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND FUNCTION('YEAR', e.createdAt) = :year")
+    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND EXTRACT(YEAR FROM e.createdAt) = :year")
     Integer getSumOfPricesByUsernameAndCategoryAndYear(@Param(value = "user") User user, @Param("categoryUUID") UUID categoryUUID, @Param("year") int year);
 
     @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID)")
