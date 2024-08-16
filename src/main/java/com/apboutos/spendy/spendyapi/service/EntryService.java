@@ -88,8 +88,8 @@ public class EntryService {
         final Map<UUID, List<Integer>> sumsPerCategory = new HashMap<>();
 
         for (UUID categoryUUID : categories) {
-            final Integer sumOfDay = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndDayOfMonth(user,categoryUUID, dayOfMonth);
-            final Integer sumOfMonth = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndMonth(user,categoryUUID,month);
+            final Integer sumOfDay = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndDayOfMonth(user,categoryUUID, dayOfMonth, month, year);
+            final Integer sumOfMonth = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndMonth(user,categoryUUID,month, year);
             final Integer sumOfYear = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndYear(user,categoryUUID,year);
             final Integer sumOfAll = this.entryRepository.getSumOfPricesByUsernameAndCategory(user,categoryUUID);
 
