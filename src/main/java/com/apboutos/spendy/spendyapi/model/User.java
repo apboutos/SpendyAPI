@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +33,9 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
     @Column(name = "registration_date")
-    private Timestamp registrationDate;
+    private Instant registrationDate;
     @Column(name = "last_login")
-    private Timestamp lastLogin;
+    private Instant lastLogin;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
@@ -51,8 +51,8 @@ public class User implements UserDetails {
     public User(String username, String password, UserRole userRole) {
         this.username = username;
         this.password = password;
-        this.registrationDate = new Timestamp(System.currentTimeMillis());
-        this.lastLogin = new Timestamp(System.currentTimeMillis());
+        this.registrationDate = Instant.now();
+        this.lastLogin = Instant.now();
         this.userRole = userRole;
         this.locked = false;
         this.enabled = false;

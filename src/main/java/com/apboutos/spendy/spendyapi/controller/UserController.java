@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
+
 import java.time.Instant;
 
 
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<UserConfirmationResponse> confirmUser(@RequestParam String token) throws TokenNotFoundException, TokenExpiredException {
         log.info("Called confirmUser with token {}", token);
 
-        userService.confirmUser(token, Timestamp.from(Instant.now()));
+        userService.confirmUser(token, Instant.now());
 
         return ResponseEntity.ok(
                 new UserConfirmationResponse(

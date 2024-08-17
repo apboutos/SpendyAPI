@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 
 @Entity
@@ -24,16 +24,16 @@ public class EmailConfirmationToken {
     @Column(name = "token", nullable = false)
     private String token;
     @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
+    private Instant createdAt;
     @Column(name = "expires_at", nullable = false)
-    private Timestamp expiresAt;
+    private Instant expiresAt;
     @Column(name = "confirmed_at")
-    private Timestamp confirmedAt;
+    private Instant confirmedAt;
     @ManyToOne(targetEntity = User.class)
     @JoinColumn(name = "user_username", nullable = false,referencedColumnName = "username")
     private User user;
 
-    public EmailConfirmationToken(String token, User user, Timestamp createdAt, Timestamp expiresAt) {
+    public EmailConfirmationToken(String token, User user, Instant createdAt, Instant expiresAt) {
         this.token = token;
         this.user = user;
         this.createdAt = createdAt;

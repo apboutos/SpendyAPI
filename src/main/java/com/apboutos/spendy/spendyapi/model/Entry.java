@@ -6,8 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -48,9 +47,9 @@ public class Entry {
     private long price;
     @NotNull
     @Column(name = "created_at")
-    private final Date createdAt;
+    private final Instant createdAt;
     @Column(name = "last_update")
-    private Timestamp lastUpdate;
+    private Instant lastUpdate;
     @NotNull
     @Column(name = "is_deleted")
     private Boolean isDeleted;
@@ -64,8 +63,8 @@ public class Entry {
      * @param category the {@link Category} of the Entry.
      * @param description the description of the Entry.
      * @param price the price of the Entry in {@code long} format (cents). Divide by 100 to get the value in €
-     * @param createdAt the creation date (DD/MM/YYYY) of the Entry as a {@link Date} object.
-     * @param lastUpdate the last update timestamp (DD/MM/YYYY hh:mm:ss) of the Entry as a {@link Timestamp} object.
+     * @param createdAt the creation date (DD/MM/YYYY) of the Entry as a {@link Instant} object.
+     * @param lastUpdate the last update timestamp (DD/MM/YYYY hh:mm:ss) of the Entry as a {@link Instant} object.
      * @param isDeleted whether the Entry is marked as deleted.
      */
     public Entry(UUID uuid,
@@ -74,8 +73,8 @@ public class Entry {
                  Category category,
                  String description,
                  long price,
-                 Date createdAt,
-                 Timestamp lastUpdate,
+                 Instant createdAt,
+                 Instant lastUpdate,
                  Boolean isDeleted) {
         this.uuid = uuid;
         this.username = username;

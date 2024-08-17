@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -22,14 +22,14 @@ public class EmailConfirmationTokenService {
     }
 
     @Transactional
-    public EmailConfirmationToken validateEmailConfirmationToken(String token, Timestamp confirmedAt) throws TokenNotFoundException,TokenExpiredException {
+    public EmailConfirmationToken validateEmailConfirmationToken(String token, Instant confirmedAt) throws TokenNotFoundException,TokenExpiredException {
 
         Optional<EmailConfirmationToken> savedToken = repository.findByToken(token);
 
         if (savedToken.isEmpty()) {
             throw new TokenNotFoundException("Token is invalid.");
         }
-        if (savedToken.get().getExpiresAt().before(confirmedAt)) {
+        if (savedToken.get().getExpiresAt().isBefore(confirmedAt)) {
             throw new TokenExpiredException("Token has expired.");
         }
 

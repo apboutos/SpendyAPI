@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +32,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     void updateCategory(@Param(value = "uuid") UUID uuid,
                         @Param(value = "name") String name,
                         @Param(value = "type") Type type,
-                        @Param(value = "lastUpdate") Timestamp lastUpdate,
+                        @Param(value = "lastUpdate") Instant lastUpdate,
                         @Param(value = "isDeleted") boolean isDeleted);
 
 }

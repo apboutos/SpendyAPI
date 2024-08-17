@@ -12,12 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class EntryControllerTest {
@@ -33,19 +31,22 @@ class EntryControllerTest {
     @Test
     void getAggregatesByCategory() {
 
-        final String date = "2024-03-01T16:44:37.113Z";
+        final String startingDate = "2024-03-01T16:44:37.113Z";
+        final String endingDate = "2024-03-02T16:44:37.113Z";
         final UUID category = UUID.fromString("a704a3ca-22eb-430c-8895-8c3ae848b7e9");
         final List<UUID> categories = List.of(category);
         final String username = "username";
 
-        final Map<UUID, List<Integer>> sumOfEntries = Map.of(category, List.of(0, 100, 1000, 10000));
+        final Map<UUID, Integer> sumOfEntries = Map.of(category, 1000);
 
         Mockito.when(authenticationMock.getName())
                 .thenReturn(username);
-        Mockito.when(entryServiceMock.getPriceSumByDate(username, categories, 1, 3, 2024))
+        Mockito.when(entryServiceMock.getPriceSumOfCategoriesByDateRange(username, categories, Instant.parse(
+                startingDate), Instant.parse(endingDate)))
                 .thenReturn(sumOfEntries);
 
-        final ResponseEntity<Map<UUID, List<Integer>>> result = classUnderTest.getAggregatesByCategory(categories, date, authenticationMock);
+        final ResponseEntity<Map<UUID, Integer>> result = classUnderTest.getAggregatesByCategoryAndDateRange(
+                categories, Instant.parse(startingDate), Instant.parse(endingDate), authenticationMock);
 
         Assertions.assertEquals(result.getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(result.getBody(), sumOfEntries);

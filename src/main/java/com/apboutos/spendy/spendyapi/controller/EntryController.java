@@ -18,11 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,57 +43,46 @@ public class EntryController {
     ResponseEntity<List<EntryDTO>> getEntries(@RequestParam("lastPullRequestTimestamp") @NotBlank String lastPullRequestTimestamp, Authentication authentication) {
         log.info("Called getEntries with {}", lastPullRequestTimestamp);
 
-        final LocalDateTime localDateTime = LocalDateTime.parse(lastPullRequestTimestamp, DateTimeFormatter.ISO_DATE_TIME);
-        final List<EntryDTO> entries = entryService.getEntries(Timestamp.valueOf(localDateTime),authentication.getName());
+        final List<EntryDTO> entries = entryService.getEntries(Instant.parse(lastPullRequestTimestamp),authentication.getName());
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }
 
     /**
-     * Endpoint for the retrieval of entries that returns all the entries that were created at the specified date.
-     * @param date a string containing an {@code ISO-8601} date to be matches the creation date of the entries.
+     * Endpoint for the retrieval of entries that returns all the entries that were created within the specified moment range.
+     * @param startingDate a string containing an {@code ISO-8601} date. Retrieved entries must be created after that date.
+     * @param endingDate a string containing an {@code ISO-8601} date. Retrieved entries must be created before that date.
      * @param authentication the user authentication information.
      * @return a list of {@link EntryDTO} objects containing all the retrieved entries.
      */
-    @GetMapping(path = "/date")
-    ResponseEntity<List<EntryDTO>> getEntriesByDate(@RequestParam("date") @NotBlank String date, Authentication authentication) {
-        log.info("Called getEntriesByDate with date {}", date);
+    @GetMapping(path = "/dateRange")
+    ResponseEntity<List<EntryDTO>> getEntriesByDateRange(@RequestParam("startingDate") @NotNull Instant startingDate, @RequestParam("endingDate") @NotNull Instant endingDate, Authentication authentication) {
+        log.info("Called getEntriesByDateRange with startingDate: {} endingDate: {}", startingDate, endingDate);
 
-        final LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME);
-        final Date parsedDate = Date.valueOf(localDate);
-
-        final List<EntryDTO> entries = entryService.getEntriesByDate(parsedDate,authentication.getName());
+        final List<EntryDTO> entries = entryService.getEntriesByDateRange(startingDate, endingDate, authentication.getName());
 
         return new ResponseEntity<>(entries,HttpStatus.OK);
     }
 
     /**
-     * Returns the Map with the category UUID as the key and a list of Integers as value. The list of integers contains
-     * four sums, one for the day, one for the month, one year and one for the lifetime for the specified category.
-     * <br>
-     * <br>
-     * Example: If the given UUID corresponds to Food category and the specified date is 24/05/2024
-     * the list of Integers might look like this  [13,158,1256,10243].
-     * <br>The first value is the sum of all entries in Food category for that day (the 24rth of May 2024).
-     * <br>The second value is the sum of all entries in Food category for that month (May 2024).
-     * <br>The third value is the sum of all entries in Food category for that year (2024).
-     * <br>The forth value is the sum of all entries in Food category.
+     * Returns the Map with the category UUID as the key and an Integer as value that corresponds to the price sum of
+     * all entries that belong to that category and were created within the specified date range.
      *
      * @param categories the UUIDs of the categories.
-     * @param date the date for which the sums will be calculated.
+     * @param startingDate a string containing an {@code ISO-8601} date. Retrieved entries must be created after that date to be included in the sum.
+     * @param endingDate a string containing an {@code ISO-8601} date. Retrieved entries must be created before that date to be included in the sum.
      * @param authentication the user authentication information.
-     * @return a {@link Map} with category {@link UUID} as the key and a {@code List} of {@code Integer} as the value.
+     * @return a {@link Map} with category {@link UUID} as the key and an {@link Integer} as the value.
      */
     @GetMapping(path = "/aggregates/by-category")
-   ResponseEntity<Map<UUID, List<Integer>>> getAggregatesByCategory(
+   ResponseEntity<Map<UUID, Integer>> getAggregatesByCategoryAndDateRange(
             @RequestParam("categories") @NotNull List<UUID> categories,
-            @RequestParam("date") @NotNull String date,
+            @RequestParam("startingDate") @NotNull Instant startingDate,
+            @RequestParam("endingDate") @NotNull Instant endingDate,
             Authentication authentication) {
-        log.info("Called getAggregatesByCategory with categories: {} date: {}",categories,date);
+        log.info("Called getAggregatesByCategoryAndDateRange with categories: {} startingDate: {} endingDate: {}", categories, startingDate, endingDate);
 
-        final LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME);
-
-        final Map<UUID, List<Integer>> result = this.entryService.getPriceSumByDate(authentication.getName(),categories,localDate.getDayOfMonth(), localDate.getMonthValue(), localDate.getYear());
+        final Map<UUID, Integer> result = this.entryService.getPriceSumOfCategoriesByDateRange(authentication.getName(),categories, startingDate, endingDate);
 
         return new ResponseEntity<>(result,HttpStatus.OK);
     }

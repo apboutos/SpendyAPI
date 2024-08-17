@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 @Repository
@@ -18,7 +18,7 @@ public interface EmailConfirmationTokenRepository extends JpaRepository<EmailCon
 
     @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query("UPDATE EmailConfirmationToken token SET token.confirmedAt = :confirmedAt WHERE token.id = :id")
-    void updateTokenConfirmationTimestamp(@Param(value = "id") Long id , @Param(value = "confirmedAt")Timestamp confirmedAt);
+    void updateTokenConfirmationTimestamp(@Param(value = "id") Long id , @Param(value = "confirmedAt") Instant confirmedAt);
 
 
 }

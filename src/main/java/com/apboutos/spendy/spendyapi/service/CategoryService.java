@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +93,7 @@ public class CategoryService {
         if (searchResult.isEmpty()) {
             throw new CategoryNotFoundException("This category does not exist.");
         }
-        final Timestamp lastUpdate = Timestamp.from(Instant.now());
+        final Instant lastUpdate = Instant.now();
         repository.updateCategory(
                 categoryDTO.uuid(),
                 categoryDTO.name(),

@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -39,7 +38,7 @@ public class UserService implements UserDetailsService {
     public EmailConfirmationToken registerUser(UserRegistrationRequest request) throws UsernameTakenException {
 
         final User user = new User(request.username(), passwordEncoder.encode(request.password()), UserRole.USER);
-        user.setRegistrationDate(Timestamp.from(Instant.now()));
+        user.setRegistrationDate(Instant.now());
         user.setUserRole(UserRole.USER);
 
         if (repository.findByUsername(user.getUsername()).isPresent()) {
@@ -51,8 +50,8 @@ public class UserService implements UserDetailsService {
         final EmailConfirmationToken token = new EmailConfirmationToken(
                 UUID.randomUUID().toString(),
                 databaseSavedUser,
-                Timestamp.from(Instant.now()),
-                Timestamp.from(Instant.now().plusSeconds(864000))
+                Instant.now(),
+                Instant.now().plusSeconds(864000)
         );
 
 
@@ -62,7 +61,7 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public void confirmUser(String token, Timestamp confirmedAt) throws TokenExpiredException, TokenNotFoundException {
+    public void confirmUser(String token, Instant confirmedAt) throws TokenExpiredException, TokenNotFoundException {
 
         final EmailConfirmationToken confirmedToken = emailConfirmationTokenService.validateEmailConfirmationToken(token,confirmedAt);
 

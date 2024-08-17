@@ -15,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -63,7 +61,7 @@ public class EntryService {
                 conflictingEntriesOnCategory);
     }
 
-    public List<EntryDTO> getEntries(Timestamp lastPullRequestTimestamp, String username) {
+    public List<EntryDTO> getEntries(Instant lastPullRequestTimestamp, String username) {
 
         final User user = userService.loadUserByUsername(username);
 
@@ -72,35 +70,28 @@ public class EntryService {
         return entriesReturnedBySearch.stream().map(this::createDTOFromEntry).collect(Collectors.toList());
     }
 
-    public List<EntryDTO> getEntriesByDate(Date date, String username) {
+    public List<EntryDTO> getEntriesByDateRange(Instant startingDate, Instant endingDate, String username) {
 
         final User user = userService.loadUserByUsername(username);
 
-        final List<Entry> entriesReturnedBySearch = entryRepository.findEntryByUsernameAndCreatedAt(user, date);
+        final List<Entry> entriesReturnedBySearch = entryRepository.findEntryByUsernameAndCreatedAt(user, startingDate, endingDate);
 
         return entriesReturnedBySearch.stream().map(this::createDTOFromEntry).collect(Collectors.toList());
 
     }
 
-    public Map<UUID, List<Integer>> getPriceSumByDate(String username, List<UUID> categories, int dayOfMonth, int month, int year) {
+    public Map<UUID, Integer> getPriceSumOfCategoriesByDateRange(String username, List<UUID> categories, Instant startingDate, Instant endingDate) {
 
         final User user = userService.loadUserByUsername(username);
-        final Map<UUID, List<Integer>> sumsPerCategory = new HashMap<>();
+        final Map<UUID, Integer> sumPerCategory = new HashMap<>();
 
         for (UUID categoryUUID : categories) {
-            final Integer sumOfDay = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndDayOfMonth(user,categoryUUID, dayOfMonth, month, year);
-            final Integer sumOfMonth = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndMonth(user,categoryUUID,month, year);
-            final Integer sumOfYear = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndYear(user,categoryUUID,year);
-            final Integer sumOfAll = this.entryRepository.getSumOfPricesByUsernameAndCategory(user,categoryUUID);
+            final Integer sum = this.entryRepository.getSumOfPricesByUsernameAndCategoryAndDateRange(user,categoryUUID, startingDate, endingDate);
 
-            sumsPerCategory.put(categoryUUID,List.of(
-                    sumOfDay != null ? sumOfDay : 0,
-                    sumOfMonth != null ? sumOfMonth : 0,
-                    sumOfYear != null ? sumOfYear : 0,
-                    sumOfAll != null ? sumOfAll : 0));
+            sumPerCategory.put(categoryUUID, sum);
         }
 
-        return sumsPerCategory;
+        return sumPerCategory;
     }
 
     public int countEntriesByCategory(Category category, String username) {
@@ -156,7 +147,7 @@ public class EntryService {
         else {
             final List<Entry> entriesToBeModified = this.entryRepository.findEntriesByUsernameAndCategory(user,oldCategory.get());
             for (Entry entry: entriesToBeModified) {
-                final Timestamp lastUpdate = Timestamp.from(Instant.now());
+                final Instant lastUpdate = Instant.now();
 
                 this.entryRepository.updateEntry(
                         entry.getUuid(),
@@ -200,7 +191,7 @@ public class EntryService {
             else if (categorySearchResult.isEmpty()) {
                 conflictingEntriesOnCategory.add(entry);
             }
-            else if (result.get().getLastUpdate().after(entry.lastUpdate())) {
+            else if (result.get().getLastUpdate().isAfter(entry.lastUpdate())) {
                 conflictingEntriesOnLastUpdate.add(entry);
             }
             else {
