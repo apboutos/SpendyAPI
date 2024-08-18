@@ -11,17 +11,22 @@ import com.apboutos.spendy.spendyapi.model.Category;
 import com.apboutos.spendy.spendyapi.model.Entry;
 import com.apboutos.spendy.spendyapi.model.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.YearMonth;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.sql.Timestamp.from;
 import static java.time.Instant.now;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class EntryService {
@@ -78,6 +83,35 @@ public class EntryService {
 
         return entriesReturnedBySearch.stream().map(this::createDTOFromEntry).collect(Collectors.toList());
 
+    }
+
+    public Map<UUID, List<Integer>> getAggregatesByCategoryAndDYearForEachMonth(String username, List<UUID> categories, String year, List<String> months, String timezoneOffset) {
+
+        final User user = userService.loadUserByUsername(username);
+        final Map<UUID, List<Integer>> sumsPerCategory = new HashMap<>();
+
+        for (UUID category : categories) {
+
+            final List<Integer> sumsPerMonth = new ArrayList<>();
+
+            for (String month: months) {
+
+                final YearMonth yearMonth = YearMonth.of(Integer.parseInt(year), Integer.parseInt(month));
+
+                final Instant startingDate = OffsetDateTime.parse(year + "-" + month + "-01T00:00:00" + timezoneOffset).toInstant();
+                final Instant endingDate = OffsetDateTime.parse(yearMonth.atEndOfMonth() + "T23:59:59" + timezoneOffset).toInstant();
+                log.info("StartingDate {}", startingDate);
+                log.info("EndingDate {}", endingDate);
+
+                final Integer sum = entryRepository.getSumOfPricesByUsernameAndCategoryAndDateRange(user, category, startingDate, endingDate);
+
+                sumsPerMonth.add(sum);
+            }
+
+            sumsPerCategory.put(category, sumsPerMonth);
+        }
+
+        return  sumsPerCategory;
     }
 
     public Map<UUID, Integer> getPriceSumOfCategoriesByDateRange(String username, List<UUID> categories, Instant startingDate, Instant endingDate) {

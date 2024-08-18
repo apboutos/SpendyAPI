@@ -30,7 +30,7 @@ public interface EntryRepository extends JpaRepository<Entry, String> {
 
     List<Entry> findEntriesByUsernameAndCategory(User user, Category category);
 
-    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND e.createdAt >= :startingDate AND e.createdAt <= :endingDate")
+    @Query("SELECT SUM(e.price) FROM Entry e WHERE e.username = :user AND e.category.id = (SELECT c.id FROM Category c WHERE c.uuid = :categoryUUID) AND e.createdAt BETWEEN :startingDate AND :endingDate")
     Integer getSumOfPricesByUsernameAndCategoryAndDateRange(
             User user,
             UUID categoryUUID,

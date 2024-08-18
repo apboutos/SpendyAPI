@@ -88,6 +88,31 @@ public class EntryController {
     }
 
     /**
+     * Returns the Map with the category UUID as the key and a list of Integers as value that corresponds to the price sum of
+     * all entries that belong to that category and month.
+     *
+     * @param categories the UUIDs of the categories.
+     * @param year a string containing the year of the entries i.e. 2024.
+     * @param months al list of string containing the months of the entries i.e [01,02,03,04,11,12].
+     * @param timezoneOffset the timezoneOffset of the client i.e +3:00 for GMT+3 or Z for UTC.
+     * @param authentication the user authentication information.
+     * @return a {@link Map} with category {@link UUID} as the key and an {@link Integer} as the value.
+     */
+    @GetMapping(path = "/aggregates/by-category-year-months")
+    ResponseEntity<Map<UUID, List<Integer>>> getAggregatesByCategoryAndDYearForEachMonth(
+            @RequestParam("categories") @NotNull List<UUID> categories,
+            @RequestParam("year") @NotNull String year,
+            @RequestParam("months") @NotNull List<String> months,
+            @RequestParam("timezoneOffset") @NotNull String timezoneOffset,
+            Authentication authentication) {
+        log.info("Called getAggregatesByCategoryAndDYearForEachMonth with categories: {} year: {} timezoneOffset: {} months: {}", categories, year, timezoneOffset, months);
+
+        final Map<UUID, List<Integer>> result = this.entryService.getAggregatesByCategoryAndDYearForEachMonth(authentication.getName(),categories, year, months, timezoneOffset);
+
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    /**
      * Endpoint for creating the specified entries.
      * @param entries a list of {@link EntryDTO} objects containing all the data of the entries to be created.
      * @param authentication the user authentication information.
